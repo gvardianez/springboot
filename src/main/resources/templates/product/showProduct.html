@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<label style="font-size: 18pt" >Name: </label>
+<p th:text="${product.getName()}">VALUE</p>
+<br>
+<label style="font-size: 18pt" >Id: </label>
+<p th:text="${product.getId()}">VALUE</p>
+<br>
+<label style="font-size: 18pt" >Cost: </label>
+<p th:text="${product.getCost()}">VALUE</p>
+<br>
+<label style="font-size: 18pt" >Type: </label>
+<p th:text="${product.getCategoryType()}">VALUE</p>
+<br>
+<hr/>
+<form th:method="GET" th:action="@{/products/{id}/edit(id = ${product.getId()})}" th:object="${product}">
+    <input type="submit" value="Update"/>
+</form>
+<br>
+<br>
+<form th:method="DELETE" th:action="@{/products/{id}(id = ${product.getId()})}" th:object="${product}">
+    <input type="submit" value="Delete"/>
+</form>
+</body>
+</html>
