@@ -1,16 +1,17 @@
 angular.module('app', []).controller('indexController', function ($scope, $http) {
     const contextPath = 'http://localhost:8080/app';
 
-    $scope.loadProducts = function () {
+    $scope.loadProducts = function (pageIndex = 1) {
         $http({
             url: contextPath + '/products',
             method: 'GET',
             params: {
-                min_price: $scope.filter ? $scope.filter.min_price : null,
-                max_price: $scope.filter ? $scope.filter.max_price : null
+                name_part: $scope.filter ? $scope.filter.name_part : null,
+                min_cost: $scope.filter ? $scope.filter.min_cost : null,
+                max_cost: $scope.filter ? $scope.filter.max_cost : null
             }
         }).then(function (response) {
-            $scope.ProductsPage = response.data;
+            $scope.ProductsList = response.data.content;
         });
     };
 
@@ -21,10 +22,17 @@ angular.module('app', []).controller('indexController', function ($scope, $http)
                 });
     }
 
+    $scope.createProduct = function () {
+        $http.post(contextPath + '/products', $scope.createProduct)
+            .then(function (response) {
+                $scope.loadProducts();
+            });
+    }
+
     $scope.changeScore = function (productId, delta) {
         $http({
             url: contextPath + '/products/change_cost',
-            method: 'GET',
+            method: 'Patch',
             params: {
                 productId: productId,
                 deltaCost: delta
