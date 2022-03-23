@@ -1,0 +1,16 @@
+package ru.alov.springboot.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class OrderItemDto {
+
+    private ProductDto product;
+    private int quantity;
+    private Double cost;
+
+}
