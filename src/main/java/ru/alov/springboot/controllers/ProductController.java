@@ -1,7 +1,6 @@
 package ru.alov.springboot.controllers;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import ru.alov.springboot.converters.ProductConverter;
 import ru.alov.springboot.dto.ProductDto;
@@ -10,10 +9,8 @@ import ru.alov.springboot.services.ICategoryService;
 import ru.alov.springboot.services.IClientService;
 import ru.alov.springboot.services.IProductService;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
-@Controller
+@RestController
 @RequestMapping("/products")
 public class ProductController {
 
@@ -30,54 +27,44 @@ public class ProductController {
     }
 
     @GetMapping
-    @ResponseBody
-    public List<ProductDto> index( @RequestParam(name = "min_price", required = false) Integer minPrice,
-                                   @RequestParam(name = "max_price", required = false) Integer maxPrice) {
-        return productService.getAllProducts(minPrice, maxPrice)
-                .stream()
-                .map(productConverter::entityToDto)
-                .collect(Collectors.toList());
+    public Page<ProductDto> index(
+            @RequestParam(name = "p", defaultValue = "1") Integer page,
+            @RequestParam(name = "min_price", required = false) Integer minPrice,
+            @RequestParam(name = "max_price", required = false) Integer maxPrice,
+            @RequestParam(name = "name_part", required = false) String namePart) {
+        return productService.findByFilter(minPrice, maxPrice, namePart, page)
+                .map(productConverter::entityToDto);
     }
 
     @GetMapping("/{id}")
-    public String showProduct(@PathVariable("id") Long id, Model model) {
-        Product product = productService.getProduct(id);
-        model.addAttribute("product", product);
-        return "product/showProduct";
-    }
-
-    @GetMapping("/new")
-    public String newProduct(@ModelAttribute("product") Product product) {
-        return "product/new";
+    public ProductDto showProduct(@PathVariable("id") Long id) {
+        return productConverter.entityToDto(productService.getProduct(id));
     }
 
     @PostMapping()
-    public String createProduct(@ModelAttribute("product") Product product
-    ) {
-        productService.saveOrUpdate(product);
-        return "redirect:/";
+    public ProductDto createProduct(@RequestBody ProductDto productDto) {
+        productDto.setId(null);
+        Product product = productService.saveOrUpdate(productConverter.dtoToEntity(productDto));
+        return productConverter.entityToDto(product);
     }
 
     @GetMapping("/{id}/edit")
-    public String editProduct(Model model, @PathVariable("id") Long id) {
-        model.addAttribute(productService.getProduct(id));
-        return "product/edit";
+    public ProductDto editProduct(@PathVariable("id") Long id) {
+        return productConverter.entityToDto(productService.getProduct(id));
     }
 
-    @PatchMapping("/{id}")
-    public String editProduct(@ModelAttribute("product") Product product) {
-        productService.saveOrUpdate(product);
-        return "redirect:/products";
+    @PutMapping("/{id}")
+    public ProductDto editProduct(@RequestBody ProductDto productDto) {
+        Product product = productService.saveOrUpdate(productConverter.dtoToEntity(productDto));
+        return productConverter.entityToDto(product);
     }
 
     @DeleteMapping("/{id}")
-    @ResponseBody
     public void deleteProduct(@PathVariable("id") Long id) {
         productService.delete(id);
     }
 
-    @GetMapping("/change_cost")
-    @ResponseBody
+    @PatchMapping("/change_cost")
     public void changeScore(@RequestParam Long productId, @RequestParam Double deltaCost) {
         productService.changeCost(productId, deltaCost);
     }

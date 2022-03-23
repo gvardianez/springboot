@@ -1,5 +1,6 @@
 package ru.alov.springboot.services;
 
+import org.springframework.data.domain.Page;
 import ru.alov.springboot.entities.Client;
 import ru.alov.springboot.entities.Product;
 
@@ -22,5 +23,7 @@ public interface IProductService {
     void changeCost(Long productID, Double deltaCost);
 
     List<Product> getAllProducts(Integer minPrice, Integer maxPrice);
+
+    Page<Product> findByFilter(Integer minScore, Integer maxScore, String partName, Integer page);
 
 }
