@@ -2,7 +2,7 @@ package ru.alov.springboot.converters;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.alov.springboot.cart_utils.OrderItem;
+import ru.alov.springboot.entities.OrderItem;
 import ru.alov.springboot.dto.OrderItemDto;
 
 @Component

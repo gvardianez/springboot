@@ -28,7 +28,7 @@ public class CartController {
 
     @GetMapping("/decrement/{id}")
     public CartDto decrementProductToCartById(@PathVariable Long id) {
-        cart.decrement(productService.getProduct(id));
+        cart.decrement(id);
         return cartConverter.entityToDto(cart);
     }
 

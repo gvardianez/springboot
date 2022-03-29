@@ -13,6 +13,7 @@ import ru.alov.springboot.entities.User;
 import ru.alov.springboot.repositories.UserRepository;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -34,6 +35,14 @@ public class UserService implements UserDetailsService {
     }
 
     private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
-        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
+        List<SimpleGrantedAuthority> simpleGrantedAuthorities = roles
+                .stream()
+                .flatMap(role -> role.getAuthorities().stream())
+                .map(authority -> new SimpleGrantedAuthority(authority.getName()))
+                .distinct()
+                .collect(Collectors.toList());
+        simpleGrantedAuthorities.addAll(roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList()));
+        return simpleGrantedAuthorities;
+
     }
 }

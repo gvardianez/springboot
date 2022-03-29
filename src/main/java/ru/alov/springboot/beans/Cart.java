@@ -2,7 +2,7 @@ package ru.alov.springboot.beans;
 
 import lombok.Data;
 import org.springframework.stereotype.Component;
-import ru.alov.springboot.cart_utils.OrderItem;
+import ru.alov.springboot.entities.OrderItem;
 import ru.alov.springboot.entities.Product;
 import ru.alov.springboot.exceptions.ResourceNotFoundException;
 
@@ -29,18 +29,14 @@ public class Cart {
     }
 
     public void add(Product product) {
-        Optional<OrderItem> optionalOrderItem = items.stream().filter(orderItem -> orderItem.getProduct().getId().equals(product.getId())).findAny();
-        if (optionalOrderItem.isPresent()) {
-            optionalOrderItem.get().increment();
-        } else items.add(new OrderItem(product));
+        items.stream().filter(orderItem -> orderItem.getProduct().getId().equals(product.getId())).findFirst().ifPresentOrElse(OrderItem::increment, () -> items.add(new OrderItem(product)));
         recalculate();
     }
 
-    public void decrement(Product product) {
-        Optional<OrderItem> optionalOrderItem = items.stream().filter(orderItem -> orderItem.getProduct().getId().equals(product.getId())).findAny();
-        if (optionalOrderItem.isPresent()) {
-            optionalOrderItem.get().decrement();
-        } else throw new ResourceNotFoundException("Product not found, id = " + product.getId());
+    public void decrement(Long productId) {
+        items.stream().filter(orderItem -> orderItem.getProduct().getId().equals(productId)).findAny().ifPresentOrElse(OrderItem::decrement, () -> {
+            throw new ResourceNotFoundException("Product not found, id = " + productId);
+        });
         recalculate();
     }
 
@@ -51,6 +47,7 @@ public class Cart {
         if (optionalOrderItem.isPresent()) {
             OrderItem orderItem = optionalOrderItem.get();
             items.remove(orderItem);
+            recalculate();
         } else throw new ResourceNotFoundException("Product not found, id = " + productId);
     }
 

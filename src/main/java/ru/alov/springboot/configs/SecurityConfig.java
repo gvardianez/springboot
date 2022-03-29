@@ -10,6 +10,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import ru.alov.springboot.services.impl.UserService;
 
+import java.security.Principal;
+
 @EnableWebSecurity
 @RequiredArgsConstructor
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
@@ -20,9 +22,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/all_products").authenticated()
+                .antMatchers("/all_products").hasAuthority("CAN_WRITE")
                 .antMatchers("/auth_page/**").authenticated()
                 .antMatchers("/user_info").authenticated()
+                .antMatchers("/orders/**").authenticated()
                 .antMatchers("/admin/**").hasAnyRole("ADMIN")
                 .anyRequest().permitAll()
                 .and()
