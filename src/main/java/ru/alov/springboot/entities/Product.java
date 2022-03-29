@@ -6,6 +6,7 @@ import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "products")
@@ -32,14 +33,14 @@ public class Product {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @ManyToMany()
-    @Cascade(org.hibernate.annotations.CascadeType.DELETE)
-    @JoinTable(
-            name = "products_orders",
-            joinColumns = @JoinColumn(name = "product_id"),
-            inverseJoinColumns = @JoinColumn(name = "order_id")
-    )
-    private List<Order> orderList;
+//    @ManyToMany()
+//    @Cascade(org.hibernate.annotations.CascadeType.DELETE)
+//    @JoinTable(
+//            name = "products_orders",
+//            joinColumns = @JoinColumn(name = "product_id"),
+//            inverseJoinColumns = @JoinColumn(name = "order_id")
+//    )
+//    private List<Order> orderList;
 
     @Transient
     private CategoryTypes categoryType;
